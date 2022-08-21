@@ -30,7 +30,7 @@ resource "google_project_service" "scheduler_api" {
 
 resource "google_cloud_run_service" "default" {
   project  = var.project_id
-  name     = "mydcabot_service"
+  name     = "mydcabot-service"
   location = var.region
 
   template {
