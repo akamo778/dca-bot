@@ -15,6 +15,8 @@ steps:
       - 'mydcabot-service'
       - '--image=gcr.io/$PROJECT_ID/mydcabot-service:$COMMIT_SHA'
       - '--region=$_REGION'
-
+options:
+  substitutionOption: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY
 images:
   - 'gcr.io/$PROJECT_ID/mydcabot-service:$COMMIT_SHA'
