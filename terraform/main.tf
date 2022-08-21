@@ -107,6 +107,7 @@ resource "google_service_account" "cloudbuild_service_account" {
 }
 
 resource "google_project_iam_member" "act_as" {
+  project = var.project_id
   for_each = toset([
     "roles/logging.logWriter",
     "roles/iam.serviceAccountUser",
