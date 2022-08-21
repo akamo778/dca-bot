@@ -117,4 +117,8 @@ resource "google_cloudbuild_trigger" "mydcabot-build-trigger" {
   substitutions = {
     _REGION = var.region
   }
+
+  depends_on = [
+    google_project_service.cloudbuild_api
+  ]
 }
