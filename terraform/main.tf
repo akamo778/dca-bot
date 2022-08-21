@@ -45,6 +45,10 @@ resource "google_cloud_run_service" "default" {
   depends_on = [
     google_project_service.run_api
   ]
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "google_service_account" "default" {
