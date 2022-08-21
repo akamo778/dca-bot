@@ -24,6 +24,11 @@ resource "google_project_service" "scheduler_api" {
   disable_on_destroy = false
 }
 
+resource "google_project_service" "cloudbuild_api" {
+  service            = "cloudbuild.googleapis.com"
+  disable_on_destroy = false
+}
+
 resource "google_cloud_run_service" "default" {
   project  = var.project_id
   name     = "mydcabot-service"
@@ -95,4 +100,21 @@ resource "google_cloud_run_service_iam_member" "default" {
   depends_on = [
     google_cloud_run_service.default
   ]
+}
+
+resource "google_cloudbuild_trigger" "mydcabot-build-trigger" {
+  name     = "mydcabot-build-trigger"
+  filename = "cloudbuild.yaml"
+
+  github {
+    owner = "akamo778"
+    name  = "dca-bot"
+    push {
+      branch = "^main$"
+    }
+  }
+
+  substitutions = {
+    _REGION = var.region
+  }
 }
