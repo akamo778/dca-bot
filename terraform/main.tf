@@ -56,7 +56,7 @@ resource "google_cloud_run_service" "default" {
   }
 }
 
-resource "google_service_account" "default" {
+resource "google_service_account" "scheduler_service_account" {
   account_id   = "mydcabot-scheduler-sa"
   description  = "Cloud Scheduler service account; used to trigger scheduled Cloud Run jobs."
   display_name = "mydcabot-scheduler-sa"
@@ -82,7 +82,7 @@ resource "google_cloud_scheduler_job" "default" {
     uri         = google_cloud_run_service.default.status[0].url
 
     oidc_token {
-      service_account_email = google_service_account.default.email
+      service_account_email = google_service_account.scheduler_service_account.email
     }
   }
 
@@ -95,18 +95,38 @@ resource "google_cloud_run_service_iam_member" "default" {
   location = google_cloud_run_service.default.location
   service  = google_cloud_run_service.default.name
   role     = "roles/run.invoker"
-  member   = "serviceAccount:${google_service_account.default.email}"
+  member   = "serviceAccount:${google_service_account.scheduler_service_account.email}"
 
   depends_on = [
     google_cloud_run_service.default
   ]
 }
 
+resource "google_service_account" "cloudbuild_service_account" {
+  account_id = "cloudbuild-service-account"
+}
+
+resource "google_project_iam_member" "act_as" {
+  project = data.google_project.project.project_id
+  for_each = toset([
+    "roles/logging.logWriter",
+    "roles/iam.serviceAccountUser",
+    "roles/run.admin",
+    "roles/cloudbuild.builds.builder",
+    "roles/storage.admin",
+  ])
+  role   = each.value
+  member = "serviceAccount:${google_service_account.cloudbuild_service_account.email}"
+
+  depends_on = [
+    google_service_account.cloudbuild_service_account
+  ]
+}
+
 resource "google_cloudbuild_trigger" "mydcabot-build-trigger" {
   name     = "mydcabot-build-trigger"
   filename = "cloudbuild.yaml"
-
-  # TODO: service account の指定
+  service_account = google_service_account.cloudbuild_service_account.id
 
   github {
     owner = "akamo778"
@@ -121,6 +141,6 @@ resource "google_cloudbuild_trigger" "mydcabot-build-trigger" {
   }
 
   depends_on = [
-    google_project_service.cloudbuild_api
+    google_project_iam_member.act_as
   ]
 }
