@@ -106,6 +106,8 @@ resource "google_cloudbuild_trigger" "mydcabot-build-trigger" {
   name     = "mydcabot-build-trigger"
   filename = "cloudbuild.yaml"
 
+  # TODO: service account の指定
+
   github {
     owner = "akamo778"
     name  = "dca-bot"
