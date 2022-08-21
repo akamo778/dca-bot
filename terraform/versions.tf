@@ -10,7 +10,7 @@ terraform {
     organization = "ryohashimoto"
 
     workspaces {
-      name = "dca-bot"
+      name = "mydcabot"
     }
   }
 }
