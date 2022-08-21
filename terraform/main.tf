@@ -87,4 +87,8 @@ resource "google_cloud_run_service_iam_member" "default" {
   service  = google_cloud_run_service.default.name
   role     = "roles/run.invoker"
   member   = "serviceAccount:${google_service_account.default.email}"
+
+  depends_on = [
+    google_cloud_run_service.default
+  ]
 }
