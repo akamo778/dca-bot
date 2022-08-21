@@ -124,8 +124,8 @@ resource "google_project_iam_member" "act_as" {
 }
 
 resource "google_cloudbuild_trigger" "mydcabot-build-trigger" {
-  name     = "mydcabot-build-trigger"
-  filename = "cloudbuild.yaml"
+  name            = "mydcabot-build-trigger"
+  filename        = "cloudbuild.yaml"
   service_account = google_service_account.cloudbuild_service_account.id
 
   github {
